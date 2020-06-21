@@ -16,7 +16,6 @@ The second variant is necessary to include a <mask> token where you want the mod
 ### Running 
 
 ```
-cd web-app
 python app.py
 ```
 
