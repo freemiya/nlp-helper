@@ -9,7 +9,7 @@ jQuery(document).ready(function () {
 
     var slider_mask = $('#max_words_mask')
     slider_mask.on('change mousemove', function (evt) {
-        $('#label_max_words').text('Top k words: ' + slider_mask.val())
+        $('#label_max_words_mask').text('Top k words: ' + slider_mask.val())
     })
 
     $('#input_text').on('keyup', function (e) {
