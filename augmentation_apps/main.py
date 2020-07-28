@@ -77,6 +77,8 @@ def get_predictions(modelname, text_sentence, top_clean=5):
     with predictions in the later stage
     """
     for _ in range(top_clean):
+        # 'Ġ' is added to words by tokenizers in the case of RoBERTa, XLMRoBERTa, Bart.
+        # So, removing it.
         predicted_sentence = [tokenn.replace('Ġ','') for tokenn in tokenizer.convert_ids_to_tokens(input_ids[0])]
         fillinblank_sentences.append(predicted_sentence)
 
@@ -184,6 +186,8 @@ def get_mask_predictions(sentence: str, modelname: str, num_sents= 5):
         masktokenized_text, _ = prepare_input(tokenizer=model_dict[modelname][0], \
                                                         style=f'{modelname}', text=sentence)
         masktokenized_text = [tokenn.replace('Ġ','') for tokenn in masktokenized_text]
+        # 'Ġ' is added to words by tokenizers in the case of RoBERTa, XLMRoBERTa, Bart.
+        # So, removing it.
 
     masked_sentence = ' '.join(masktokenized_text)
 
