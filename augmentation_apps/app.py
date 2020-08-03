@@ -5,7 +5,7 @@ import main
 st.title("Data Augmentation")
 
 # @st.cache
-def get_predictions(input_text: str, modelname:str):
+def get_predictions_colored(input_text: str, modelname:str, top_k= 5):
     """
     Input Text is given to multiple Language Models and predictions (with HTML tags)
     are collected.
@@ -18,8 +18,7 @@ def get_predictions(input_text: str, modelname:str):
                           }
     """
     try:
-        top_k = 5
-        res = main.get_mask_predictions(input_text, modelname, top_k)
+        res = main.get_mask_predictions(input_text, modelname, int(top_k))
         return res
     except Exception as error:
         err = str(error)
@@ -27,8 +26,16 @@ def get_predictions(input_text: str, modelname:str):
 
 # https://discuss.streamlit.io/t/how-to-take-text-input-from-a-user/187/2
 user_input = st.text_area("Input sentence", 'Company understands and accepts the failure of project.')
-modelselected = st.selectbox('Select a model',('bert','xlmroberta','bart','electra','roberta'))
+st.write("_Go ahead! <mask> your sentence. Otherwise, <mask> will be __randomly generated.__ _")
+
+modelselected = st.sidebar.selectbox('Select a model',('roberta','electra','bert','xlmroberta','bart'))
+topk = st.sidebar.slider('Top-k predictions', 0, 15, 5)
 
 # https://discuss.streamlit.io/t/how-to-add-a-function-to-a-button/1478/3
 if st.button('Generate!'):
-    st.markdown(get_predictions(user_input, modelselected)[f'{modelselected}'], unsafe_allow_html = True)
+    st.markdown(get_predictions_colored(user_input, modelselected, topk)[f'{modelselected}'], unsafe_allow_html = True)
+
+
+
+
+

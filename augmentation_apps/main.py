@@ -24,25 +24,23 @@ from transformers import RobertaTokenizer, RobertaForMaskedLM
 roberta_tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
 roberta_model = RobertaForMaskedLM.from_pretrained('roberta-base').eval()
 
-top_k = 10
-
 model_dict = {'bert':(bert_tokenizer, bert_model),'xlmroberta':(xlmroberta_tokenizer, xlmroberta_model),
               'bart':(bart_tokenizer, bart_model),'electra': (electra_tokenizer, electra_model),
               'roberta': (roberta_tokenizer, roberta_model)}
 
-def decode(tokenizer, pred_idx, top_clean):
+def decode(tokenizer, pred_idx, top_k):
     ignore_tokens = string.punctuation + '[PAD]'
     tokens = []
     for w in pred_idx:
         token = ''.join(tokenizer.decode(w).split())
         if token not in ignore_tokens:
             tokens.append(token.replace('##', ''))
-    return tokens[:top_clean]
+    return tokens[:top_k]
 
-def decode_multiple_masks(tokenizer, predict, mask_positions, fillinblank_sentences, top_clean):
+def decode_multiple_masks(tokenizer, predict, mask_positions, fillinblank_sentences, top_k):
     # Place the predictions in the sentence
     for mask_idx in mask_positions:
-        predicted_words = decode(tokenizer, predict[0, mask_idx, :].topk(top_k).indices.tolist(), top_clean)
+        predicted_words = decode(tokenizer, predict[0, mask_idx, :].topk(top_k).indices.tolist(), top_k)
 
         for idx in range((len(predicted_words))):
             fillinblank_sentences[idx][mask_idx] = predicted_words[idx]
@@ -60,7 +58,7 @@ def encode(tokenizer, text_sentence, add_special_tokens=True):
 
     return input_ids, mask_positions
 
-def get_predictions(modelname, text_sentence, top_clean=5):
+def get_predictions(modelname, text_sentence, top_k=5):
     """
     Psuedocode:
         Get the masked sentence.
@@ -76,7 +74,7 @@ def get_predictions(modelname, text_sentence, top_clean=5):
     Create fill in the blanks to fill up 
     with predictions in the later stage
     """
-    for _ in range(top_clean):
+    for _ in range(top_k):
         # 'Ġ' is added to words by tokenizers in the case of RoBERTa, XLMRoBERTa, Bart.
         # So, removing it.
         predicted_sentence = [tokenn.replace('Ġ','') for tokenn in tokenizer.convert_ids_to_tokens(input_ids[0])]
@@ -86,7 +84,7 @@ def get_predictions(modelname, text_sentence, top_clean=5):
         predict = model(input_ids)[0]
 
     # Place the predictions in the sentence
-    results = decode_multiple_masks(tokenizer, predict, mask_positions, fillinblank_sentences, top_clean)
+    results = decode_multiple_masks(tokenizer, predict, mask_positions, fillinblank_sentences, top_k)
     return results, mask_positions
 
 def mask_sentence(tokens, tokenizer, style='bert'):
@@ -175,11 +173,12 @@ def get_mask_predictions(sentence: str, modelname: str, num_sents= 5):
     """
     Psuedocode:
     For each model,
-        * Mask the sentence
+        * If <mask> is not present, mask the sentence
         * Stitch it to a normal sentence (undo BPE). TODO
         * Send it through the model
     """
-    masktokenized_text = ''
+    print(f"sentece is {sentence} and modename is {modelname}")
+    masktokenized_text = (copy.copy(sentence)).split()
     results = dict()
 
     while '<mask>' not in masktokenized_text:
@@ -191,8 +190,10 @@ def get_mask_predictions(sentence: str, modelname: str, num_sents= 5):
 
     masked_sentence = ' '.join(masktokenized_text)
 
+    print(f"Before predictions")
     # Adding 1 for every position since <CLS> & <SEP> are added at encode stage.
-    pred_sents, mask_positions = get_predictions(modelname, masked_sentence, top_clean=num_sents)
+    pred_sents, mask_positions = get_predictions(modelname, masked_sentence, top_k=num_sents)
+    print(f"After predictions {pred_sents}")
 
     #Add html tags to it
     for idx, sent in enumerate(pred_sents):
@@ -201,4 +202,5 @@ def get_mask_predictions(sentence: str, modelname: str, num_sents= 5):
     
     pred_sentences = [' '.join(sent[1:-1]) for sent in pred_sents]  #remove the cls and sep tag
     results[modelname] = "<br>".join(pred_sentences)
+    print(f"returning results {results}")
     return results
