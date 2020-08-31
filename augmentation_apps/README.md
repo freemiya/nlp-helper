@@ -18,6 +18,13 @@ Updated UI.
 
 ## regex to words
 
+`Instructions to run:`
+
+```
+streamlit run regex2word.py
+```
+
+
 `Usage for user:` 
 * Specify each sub-pattern separated by "||".
 * For each sub-pattern, specify the [0-9]/[a-z]/[A-Z]/[aA-zZ] and mention the num of chars to generate but separate these two by "_".
