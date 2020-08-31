@@ -1,6 +1,6 @@
 # augmentation_apps
 
-## Vanilla Predictions
+## 1. Vanilla Predictions using LMs
 A basic application to check the language models' prediction. Supports `roberta`, `bert`, `bart`, `electra`, `xlmroberta`.
 
 ### Usage 
@@ -16,7 +16,7 @@ Application will `<mask>` the sentence if not `<masked>`
 Updated UI.
 ![Prediction-2 updated](imgs/roberta.PNG)
 
-## regex to words
+## 2. Regex to words
 
 `Instructions to run:`
 
