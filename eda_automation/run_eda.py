@@ -273,11 +273,11 @@ if data_preview:
 # If user wants to look at the data, this will let them see it
 distribution_preview = st.checkbox('Look at class distribution')
 if distribution_preview:
-    tasks_labels_distributions = create_class_distribution(df, taskcols=tasklabel_selected, class_separator=';')
+    tasks_labels_distributions = create_class_distribution(df, taskcols=tasklabel_selected, class_separator=',')
 
 # If user wants to look at the data, this will let them see it
 keywords_preview = st.checkbox('Look at top _k_ words per category & task')
 if keywords_preview:
-    task_label_word_distribution = get_keywords_per_class(df=df, textcol=text_selected, taskcols= tasklabel_selected, class_separator=';', topkwords=500)
+    task_label_word_distribution = get_keywords_per_class(df=df, textcol=text_selected, taskcols= tasklabel_selected, class_separator=',', topkwords=500)
     st.pyplot(create_class_keywordmatrix(task_label_word_distribution))
     # st.write(task_label_word_distribution)
