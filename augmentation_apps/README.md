@@ -38,6 +38,28 @@ means
 
 ![Regex 2 Word Image](imgs/regex2word.png)
 
+## 3. Faker lib to generate fake data given a template sentence
+
+`Instructions to run:`
+
+```
+streamlit run fakerapp.py
+```
+
+
+`Usage for user:` 
+* Specify what you want to be faked by `{requirement}`.
+* Currently, it can fake `'country', 'person_male', 'person_female' ,'address', 'city', 'company', 'country_code','language_name'`.
+
+
+Example: "`{person_female}` lives in the `{country}`"
+means 
+1. Generate random female name
+2. Generate random country name.
+3. Generate synthetic sentences with those combinations.
+
+![Faker App Image](imgs/faker_demopic.png)
+
 ## Grammar Module
 _Work in Progress..._
 ## Class Transfer
